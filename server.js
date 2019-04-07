@@ -6,6 +6,9 @@ const bodyParser = require('body-parser');
 //initialising the express
 const app = express();
 
+// routes
+const UserRoutes = require('./routes/users');
+
 // DB Config
 const db = require('./config/keys').mongoURI;
 
@@ -14,6 +17,17 @@ mongoose
     .connect(db)
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
+
+// middleware
+app.use(bodyParser.json());
+
+// middleware
+app.get('/', (req, res, next) => {
+    res.send('i am alive')
+});
+
+// import the routes
+app.use('/users',UserRoutes);
 
 const port = process.env.PORT || 5000;
 
