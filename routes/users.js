@@ -25,8 +25,51 @@ const User = require('../models/user');
             });
         });
     });
+
 // login
     router.get('/login', (req, res, next) => {
-        res.send('I am login');
+        const email = req.body.email;
+        const password = req.body.password;
+
+        const query = { email }
+        // check the user exists
+        User.findOne(query, (err, user) => {
+            if (err) {
+                return res.send({
+                    success: false,
+                    message: 'Error, please try again'
+                });
+            }
+            // checking for the user
+            if (!user) {
+                return res.send({
+                    success: false,
+                    message: 'Error, Account not Found!!'
+                });
+            }
+
+            user.isPasswordMatch(password, user.password, (err, isMatch) => {
+                if (!isMatch) {
+                    return res.send({
+                        success: false,
+                        message: 'Error, Invalid Password'
+                    });
+                }
+
+                let returnUser = {
+                    name: user.name,
+                    email: user.email,
+                    id: user._id
+                }
+                return res.send({
+                    success: true,
+                    message: 'You can login now',
+                    user: returnUser
+                });
+            });
+        });
+        
     });
+
+
 module.exports = router;
